@@ -61,21 +61,22 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 88 : 0}
     >
+      <View style={styles.topBar}>
+        <TouchableOpacity
+          style={styles.iconBtn}
+          onPress={() => navigation.goBack()}
+        >
+          <ArrowLeft2 size={20} color={colors.text} variant="Linear" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.iconBtn}>
+          <More size={20} color={colors.text} variant="Linear" />
+        </TouchableOpacity>
+      </View>
+
       <ScrollView
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.topBar}>
-          <TouchableOpacity
-            style={styles.iconBtn}
-            onPress={() => navigation.goBack()}
-          >
-            <ArrowLeft2 size={20} color={colors.text} variant="Linear" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBtn}>
-            <More size={20} color={colors.text} variant="Linear" />
-          </TouchableOpacity>
-        </View>
         <View style={styles.coverPlaceholder}>
           <Text style={styles.coverText}>Featured Story</Text>
         </View>
@@ -159,11 +160,16 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background, paddingTop: StatusBar.currentHeight ?? 0 },
-  content: { padding: spacing.md, paddingBottom: spacing.xl },
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+    paddingTop: (StatusBar.currentHeight ?? 0) + 10,
+  },
+  content: { padding: spacing.sm, paddingBottom: spacing.xl },
   topBar: {
     flexDirection: "row",
     justifyContent: "space-between",
+    marginHorizontal: spacing.sm,
     marginBottom: spacing.sm,
   },
   iconBtn: {
@@ -219,25 +225,25 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: 16,
     padding: spacing.md,
-    marginBottom: spacing.md
+    marginBottom: spacing.md,
   },
   commentsHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: spacing.sm
+    marginBottom: spacing.sm,
   },
   commentsLeft: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
   sectionTitle: {
     color: colors.text,
     fontWeight: "700",
-    fontSize: 18
+    fontSize: 18,
   },
   countPill: {
     backgroundColor: "rgba(47, 128, 237, 0.12)",
     borderRadius: 999,
     paddingHorizontal: spacing.sm,
-    paddingVertical: 3
+    paddingVertical: 3,
   },
   countText: { color: colors.primary, fontWeight: "700", fontSize: 12 },
   emptyComments: {
@@ -245,7 +251,7 @@ const styles = StyleSheet.create({
     borderStyle: "dashed",
     borderColor: colors.border,
     borderRadius: 12,
-    padding: spacing.md
+    padding: spacing.md,
   },
   emptyCommentsText: { color: colors.textSecondary, textAlign: "center" },
   inputWrap: {
@@ -261,7 +267,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.06,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: -2 },
-    elevation: 2
+    elevation: 2,
   },
   commentInput: {
     flex: 1,

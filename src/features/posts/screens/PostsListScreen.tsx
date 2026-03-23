@@ -14,6 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ArrowUp2, ProfileCircle, SearchNormal1 } from "iconsax-react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { Button, LoadingSpinner } from "@components";
 import { usePosts } from "@hooks";
 import { colors, spacing } from "@theme";
@@ -33,6 +34,7 @@ export const PostsListScreen = ({ navigation }: Props) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const listRef = useRef<FlatList<Post>>(null);
+  const searchAnim = useSharedValue(0);
   const skeletonData = useMemo(() => [1, 2, 3], []);
   const getItemLayout = (_: unknown, index: number) => ({
     length: 132,
@@ -89,6 +91,12 @@ export const PostsListScreen = ({ navigation }: Props) => {
     }, [loadInteractionState]),
   );
 
+  const searchAnimatedStyle = useAnimatedStyle(() => ({
+    maxHeight: 60 * searchAnim.value,
+    opacity: searchAnim.value,
+    transform: [{ translateY: (1 - searchAnim.value) * -8 }]
+  }));
+
   if (isLoading && posts.length === 0) {
     return (
       <View style={styles.container}>
@@ -130,6 +138,7 @@ export const PostsListScreen = ({ navigation }: Props) => {
               onPress={() => {
                 setIsSearchOpen((prev) => {
                   const next = !prev;
+                  searchAnim.value = withTiming(next ? 1 : 0, { duration: 220 });
                   if (!next) {
                     setSearchQuery("");
                     Keyboard.dismiss();
@@ -145,7 +154,7 @@ export const PostsListScreen = ({ navigation }: Props) => {
             </TouchableOpacity>
           </View>
         </View>
-        {isSearchOpen ? (
+        <Animated.View style={[styles.searchAnimWrap, searchAnimatedStyle]}>
           <View style={styles.searchWrap}>
             <SearchNormal1
               size={18}
@@ -163,7 +172,7 @@ export const PostsListScreen = ({ navigation }: Props) => {
               onSubmitEditing={Keyboard.dismiss}
             />
           </View>
-        ) : null}
+        </Animated.View>
       </View>
 
       <FlatList<Post>
@@ -226,7 +235,7 @@ const styles = StyleSheet.create({
   list: { flex: 1 },
   content: { padding: spacing.sm, paddingBottom: spacing.xxl + spacing.lg },
   headerWrap: {
-    marginBottom: spacing.sm,
+    // marginBottom: spacing.sm,
     paddingHorizontal: spacing.sm,
     paddingBottom: spacing.sm,
     paddingTop: StatusBar.currentHeight ?? 0,
@@ -260,6 +269,9 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingHorizontal: spacing.md,
     backgroundColor: colors.surface,
+  },
+  searchAnimWrap: {
+    overflow: "hidden"
   },
   search: {
     flex: 1,

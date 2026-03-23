@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
     gap: spacing.md,
-    padding: spacing.lg,
+    padding: spacing.sm,
     paddingTop: (StatusBar.currentHeight ?? 0) + spacing.md,
     justifyContent: "flex-start"
   },
