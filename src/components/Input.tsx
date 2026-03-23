@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
-import { KeyboardTypeOptions, StyleSheet, Text, TextInput, View } from "react-native";
+import { Keyboard, KeyboardTypeOptions, StyleSheet, Text, TextInput, View } from "react-native";
 import Animated, { interpolate, interpolateColor, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { colors, spacing } from "@theme";
 
@@ -60,6 +60,7 @@ export const Input = ({
             setIsFocused(false);
             if (!value) focusProgress.value = withTiming(0, { duration: 180 });
           }}
+          onSubmitEditing={Keyboard.dismiss}
         />
         {rightIcon}
       </View>
@@ -70,10 +71,18 @@ export const Input = ({
 
 const styles = StyleSheet.create({
   wrapper: { marginBottom: spacing.md },
-  label: { color: colors.textSecondary, marginBottom: spacing.xs },
-  container: { borderWidth: 1, borderColor: colors.border, borderRadius: 10, backgroundColor: colors.surface, paddingHorizontal: spacing.sm, flexDirection: "row", alignItems: "center" },
-  input: { color: colors.text, flex: 1, paddingVertical: spacing.sm },
+  label: { color: colors.textSecondary, marginBottom: spacing.xs, fontWeight: "500" },
+  container: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 12,
+    backgroundColor: colors.surface,
+    paddingHorizontal: spacing.sm,
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  input: { color: colors.text, flex: 1, paddingVertical: spacing.sm + 2 },
   focusedBorder: { borderColor: colors.primary },
   errorBorder: { borderColor: colors.error },
-  errorText: { color: colors.error, marginTop: spacing.xs }
+  errorText: { color: colors.error, marginTop: spacing.xs, fontSize: 12 }
 });

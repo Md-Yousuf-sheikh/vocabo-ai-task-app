@@ -14,8 +14,8 @@ export const Card = ({ children, onPress, style }: CardProps) => {
   const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
 
   const content = (
-    <Animated.View entering={FadeInUp.duration(280)} style={[styles.card, animatedStyle, style]}>
-      {children}
+    <Animated.View entering={FadeInUp.duration(280)} style={style}>
+      <Animated.View style={[styles.card, animatedStyle]}>{children}</Animated.View>
     </Animated.View>
   );
 
@@ -38,8 +38,10 @@ export const Card = ({ children, onPress, style }: CardProps) => {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
-    borderRadius: 14,
+    borderRadius: 18,
     padding: spacing.md,
-    ...shadows.medium
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...shadows.small
   }
 });

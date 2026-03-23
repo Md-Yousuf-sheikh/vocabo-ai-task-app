@@ -1,14 +1,19 @@
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useEffect, useState } from "react";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { ArrowLeft2, Heart, MessageText1 } from "iconsax-react-native";
 import { Avatar, Button } from "@components";
 import { useAuth } from "@hooks";
 import { logout } from "@services";
 import { colors, spacing } from "@theme";
+import type { PostsStackParamList } from "@types";
 import { formatDate } from "@utils";
 
-export const ProfileScreen = () => {
+type Props = NativeStackScreenProps<PostsStackParamList, "Profile">;
+
+export const ProfileScreen = ({ navigation }: Props) => {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [likedCount, setLikedCount] = useState(0);
@@ -56,22 +61,103 @@ export const ProfileScreen = () => {
 
   return (
     <Animated.View entering={FadeInUp.duration(260)} style={styles.container}>
-      <Avatar name={user?.email ?? "User"} size="lg" />
-      <Text style={styles.email}>{user?.email ?? "Unknown user"}</Text>
-      <Text style={styles.meta}>Created: {user?.metadata.creationTime ? formatDate(user.metadata.creationTime) : "N/A"}</Text>
-      <View style={styles.stats}>
-        <Text style={styles.stat}>Liked posts: {likedCount}</Text>
-        <Text style={styles.stat}>Comments added: {commentCount}</Text>
+      <View style={styles.topBar}>
+        <TouchableOpacity style={styles.iconBtn} onPress={() => navigation.goBack()}>
+          <ArrowLeft2 size={20} color={colors.text} variant="Linear" />
+        </TouchableOpacity>
+        <Text style={styles.topTitle}>Profile</Text>
+        <View style={styles.iconBtnPlaceholder} />
       </View>
-      <Button label="Logout" onPress={handleLogout} loading={isLoading} variant="secondary" />
+
+      <View style={styles.profileCard}>
+        <Avatar name={user?.email ?? "User"} size="lg" />
+        <Text style={styles.email}>{user?.email ?? "Unknown user"}</Text>
+        <Text style={styles.meta}>Joined: {user?.metadata.creationTime ? formatDate(user.metadata.creationTime) : "N/A"}</Text>
+      </View>
+
+      <View style={styles.stats}>
+        <Text style={styles.section}>Your Activity</Text>
+        <View style={styles.statRow}>
+          <View style={styles.statIcon}>
+            <Heart size={16} color={colors.error} variant="Bold" />
+          </View>
+          <View style={styles.statContent}>
+            <Text style={styles.statLabel}>Liked posts</Text>
+            <Text style={styles.statValue}>{likedCount}</Text>
+          </View>
+        </View>
+        <View style={styles.statRow}>
+          <View style={styles.statIcon}>
+            <MessageText1 size={16} color={colors.primary} variant="Bold" />
+          </View>
+          <View style={styles.statContent}>
+            <Text style={styles.statLabel}>Comments added</Text>
+            <Text style={styles.statValue}>{commentCount}</Text>
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.actionWrap}>
+        <Button label="Logout" onPress={handleLogout} loading={isLoading} variant="secondary" />
+      </View>
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background, alignItems: "center", justifyContent: "center", gap: spacing.sm, padding: spacing.lg },
-  email: { color: colors.text, fontSize: 18, fontWeight: "700" },
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+    gap: spacing.md,
+    padding: spacing.lg,
+    paddingTop: (StatusBar.currentHeight ?? 0) + spacing.md,
+    justifyContent: "flex-start"
+  },
+  topBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: spacing.md
+  },
+  iconBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  iconBtnPlaceholder: { width: 38, height: 38 },
+  topTitle: { color: colors.text, fontSize: 18, fontWeight: "800" },
+  profileCard: {
+    alignItems: "center",
+    gap: spacing.xs,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 18,
+    padding: spacing.lg
+  },
+  email: { color: colors.text, fontSize: 18, fontWeight: "700", marginTop: spacing.xs },
   meta: { color: colors.textSecondary },
-  stats: { marginVertical: spacing.lg, width: "100%", backgroundColor: colors.surface, borderRadius: 12, padding: spacing.md, gap: spacing.sm },
-  stat: { color: colors.textSecondary }
+  section: { color: colors.text, fontWeight: "700", marginBottom: spacing.sm, fontSize: 16 },
+  stats: { width: "100%", backgroundColor: colors.surface, borderRadius: 18, borderWidth: 1, borderColor: colors.border, padding: spacing.md, gap: spacing.sm },
+  statRow: { flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: colors.border, borderRadius: 14, padding: spacing.sm, backgroundColor: colors.background },
+  statIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: spacing.sm
+  },
+  statContent: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  statLabel: { color: colors.textSecondary, fontWeight: "600" },
+  statValue: { color: colors.text, fontWeight: "800", fontSize: 16 },
+  actionWrap: { marginTop: spacing.sm }
 });

@@ -30,6 +30,7 @@ const variantStyles: Record<Variant, ViewStyle> = {
 const ButtonComponent = ({ label, onPress, variant = "primary", loading = false, disabled = false, size = "md" }: ButtonProps) => {
   const scale = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+  const labelColor = variant === "ghost" ? colors.textSecondary : "#FFFFFF";
 
   return (
     <Pressable
@@ -43,7 +44,7 @@ const ButtonComponent = ({ label, onPress, variant = "primary", loading = false,
       onPress={onPress}
     >
       <Animated.View style={[styles.button, sizeStyles[size], variantStyles[variant], animatedStyle, disabled && styles.disabled]}>
-        {loading ? <ActivityIndicator color={colors.text} /> : <Text style={[styles.label, variant === "ghost" && styles.ghostLabel]}>{label}</Text>}
+        {loading ? <ActivityIndicator color={labelColor} /> : <Text style={[styles.label, { color: labelColor }]}>{label}</Text>}
       </Animated.View>
     </Pressable>
   );
@@ -53,7 +54,6 @@ export const Button = memo(ButtonComponent);
 
 const styles = StyleSheet.create({
   button: { borderRadius: 12, alignItems: "center", justifyContent: "center" },
-  label: { color: colors.text, fontWeight: "600" },
-  ghostLabel: { color: colors.textSecondary },
+  label: { fontWeight: "700" },
   disabled: { opacity: 0.5 }
 });

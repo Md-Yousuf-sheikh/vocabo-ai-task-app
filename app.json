@@ -13,7 +13,8 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.vocabo.ai.app"
+      "bundleIdentifier": "com.vocabo.ai.app",
+      "googleServicesFile": "./src/firebase/GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,10 +24,15 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.vocabo.ai.app"
+      "package": "com.vocabo.ai.app",
+      "googleServicesFile": "./src/firebase/google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth"
+    ]
   }
 }

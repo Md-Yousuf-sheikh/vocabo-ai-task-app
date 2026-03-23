@@ -6,6 +6,7 @@ export type AuthStackParamList = {
 export type PostsStackParamList = {
   PostsList: undefined;
   PostDetail: { postId: number };
+  Profile: undefined;
 };
 
 export type ProfileStackParamList = {
