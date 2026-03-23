@@ -1,10 +1,12 @@
+import { moderateScale, verticalScale } from "react-native-size-matters";
+
 export const fontSizes = {
-  xs: 12,
-  sm: 14,
-  md: 16,
-  lg: 20,
-  xl: 24,
-  xxl: 32
+  xs: moderateScale(12),
+  sm: moderateScale(14),
+  md: moderateScale(16),
+  lg: moderateScale(20),
+  xl: moderateScale(24),
+  xxl: moderateScale(32)
 } as const;
 
 export const fontWeights = {
@@ -15,11 +17,11 @@ export const fontWeights = {
 } as const;
 
 export const lineHeights = {
-  xs: 16,
-  sm: 20,
-  md: 24,
-  lg: 28,
-  xl: 32,
-  xxl: 40
+  xs: verticalScale(16),
+  sm: verticalScale(20),
+  md: verticalScale(24),
+  lg: verticalScale(28),
+  xl: verticalScale(32),
+  xxl: verticalScale(40)
 } as const;
 
