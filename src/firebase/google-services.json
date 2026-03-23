@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "85421562653",
+    "project_id": "viocabo-ai",
+    "storage_bucket": "viocabo-ai.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:85421562653:android:50c2003ba82d1ff7d69ff4",
+        "android_client_info": {
+          "package_name": "com.vocabo.ai.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "85421562653-se0oa0qqrf63ljitso1jc437fn7apooh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1MiJSH2T9ywOrJyLOgo4ORc8f6DwBcSc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "85421562653-se0oa0qqrf63ljitso1jc437fn7apooh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
