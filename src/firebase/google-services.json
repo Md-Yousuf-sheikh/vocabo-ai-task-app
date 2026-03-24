@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "85421562653-2g61kv3suh2mhn93vmd4uciepvi4b4kd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vocabo.ai.app",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "85421562653-8a6rf35c1vbc0n2e1rm8eosflrranfvc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vocabo.ai.app",
+            "certificate_hash": "fe25bf4cd4b15211377a8bdf5c41a7d0d144c8ce"
+          }
+        },
+        {
           "client_id": "85421562653-se0oa0qqrf63ljitso1jc437fn7apooh.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,6 +45,13 @@
             {
               "client_id": "85421562653-se0oa0qqrf63ljitso1jc437fn7apooh.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "85421562653-4l5uusrc2aji863k30fb6g6qno2q3fok.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.vocabo.ai.app"
+              }
             }
           ]
         }

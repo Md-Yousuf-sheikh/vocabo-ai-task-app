@@ -1,0 +1,65 @@
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { LoginScreen, PostDetailScreen, PostsListScreen, ProfileScreen, RegisterScreen } from "@features";
+import { useAuth } from "@hooks";
+import { ErrorBoundary } from "@utils";
+import type { AuthStackParamList, PostsStackParamList, RootStackParamList } from "@types";
+import { LoadingSpinner } from "@components";
+import { useEffect } from "react";
+
+const RootStack = createNativeStackNavigator<RootStackParamList>();
+const AuthStack = createNativeStackNavigator<AuthStackParamList>();
+const PostsStack = createNativeStackNavigator<PostsStackParamList>();
+
+// Auth Stack Navigator
+const AuthStackNavigator = () => (
+  <AuthStack.Navigator screenOptions={{ headerShown: false }}>
+    <AuthStack.Screen name="Login" component={LoginScreen} />
+    <AuthStack.Screen name="Register" component={RegisterScreen} />
+  </AuthStack.Navigator>
+);
+
+// Posts Stack Navigator
+const PostsStackNavigator = () => (
+  <PostsStack.Navigator screenOptions={{ headerShown: false }}>
+    <PostsStack.Screen name="PostsList" component={PostsListScreen} />
+    <PostsStack.Screen name="PostDetail" component={PostDetailScreen} />
+    <PostsStack.Screen name="Profile" component={ProfileScreen} />
+  </PostsStack.Navigator>
+);
+
+// Root Navigator Props
+type RootNavigatorProps = {
+  onBootstrapReady?: () => void;
+};
+
+
+// Root Navigator
+export const RootNavigator = ({ onBootstrapReady }: RootNavigatorProps) => {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading) onBootstrapReady?.();
+  }, [isLoading, onBootstrapReady]);
+
+  if (isLoading) return <LoadingSpinner message="Checking auth..." />;
+
+  return (
+    <NavigationContainer>
+      <RootStack.Navigator screenOptions={{ headerShown: false }}>
+        {isAuthenticated ? (
+          <RootStack.Screen
+            name="AppStack"
+            children={() => (
+              <ErrorBoundary>
+                <PostsStackNavigator />
+              </ErrorBoundary>
+            )}
+          />
+        ) : (
+          <RootStack.Screen name="AuthStack" component={AuthStackNavigator} />
+        )}
+      </RootStack.Navigator>
+    </NavigationContainer>
+  );
+};

@@ -1,20 +1,38 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import "react-native-gesture-handler";
+import "react-native-reanimated";
+import { StatusBar } from "expo-status-bar";
+import { RootNavigator } from "@routes";
+import React, { useCallback, useEffect, useState } from "react";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import * as SplashScreen from "expo-splash-screen";
+import { View } from "react-native";
+import { KeyboardProvider } from "react-native-keyboard-controller";
+
+void SplashScreen.preventAutoHideAsync();
+
+GoogleSignin.configure({
+  webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? "",
+  iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ?? "",
+});
 
 export default function App() {
+  const [isBootstrapReady, setIsBootstrapReady] = useState(false);
+
+  const handleBootstrapReady = useCallback(() => {
+    setIsBootstrapReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isBootstrapReady) return;
+    void SplashScreen.hideAsync();
+  }, [isBootstrapReady]);
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <KeyboardProvider>
+      <View style={{ flex: 1 }}>
+        <StatusBar style="dark" />
+        <RootNavigator onBootstrapReady={handleBootstrapReady} />
+      </View>
+    </KeyboardProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
