@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "start": "expo start",
+    "start": "expo run:android",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "iphone": "expo run:ios --device 'iPhone (26.1)'",
+    "build:apk": "cd android && ./gradlew assembleRelease && cd ..",
+    "build:abb": "cd android && ./gradlew bundleRelease && cd 4..",
+    "clean": "cd android && ./gradlew clean",
+    "prebuild": "npx expo prebuild"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.1.1",
