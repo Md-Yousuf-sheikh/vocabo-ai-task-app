@@ -23,7 +23,6 @@ const PostCardComponent = ({
 }: PostCardProps) => {
   return (
     <Card onPress={onPress} style={styles.card}>
-      <Text style={styles.category}>Trending</Text>
       <Text numberOfLines={1} style={styles.title}>
         {post.title}
       </Text>

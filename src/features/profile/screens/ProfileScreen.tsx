@@ -1,9 +1,9 @@
-import { Alert, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Modal, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useEffect, useState } from "react";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { ArrowLeft2, Heart, MessageText1 } from "iconsax-react-native";
+import { ArrowLeft2, Heart, Logout, MessageText1 } from "iconsax-react-native";
 import { Avatar, Button } from "@components";
 import { useAuth } from "@hooks";
 import { logout } from "@services";
@@ -16,6 +16,7 @@ type Props = NativeStackScreenProps<PostsStackParamList, "Profile">;
 export const ProfileScreen = ({ navigation }: Props) => {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [likedCount, setLikedCount] = useState(0);
   const [commentCount, setCommentCount] = useState(0);
 
@@ -41,22 +42,14 @@ export const ProfileScreen = ({ navigation }: Props) => {
     loadStats();
   }, []);
 
-  const handleLogout = () => {
-    Alert.alert("Confirm logout", "Are you sure you want to logout?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Logout",
-        style: "destructive",
-        onPress: async () => {
-          setIsLoading(true);
-          try {
-            await logout();
-          } finally {
-            setIsLoading(false);
-          }
-        }
-      }
-    ]);
+  const handleConfirmLogout = async () => {
+    setIsLoading(true);
+    try {
+      await logout();
+    } finally {
+      setIsLoading(false);
+      setShowLogoutModal(false);
+    }
   };
 
   return (
@@ -98,8 +91,28 @@ export const ProfileScreen = ({ navigation }: Props) => {
       </View>
 
       <View style={styles.actionWrap}>
-        <Button label="Logout" onPress={handleLogout} loading={isLoading} variant="secondary" />
+        <Button label="Logout" onPress={() => setShowLogoutModal(true)} loading={isLoading} variant="secondary" />
       </View>
+
+      <Modal transparent animationType="fade" visible={showLogoutModal} onRequestClose={() => setShowLogoutModal(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalIconWrap}>
+              <Logout size={22} color={colors.error} variant="Bold" />
+            </View>
+            <Text style={styles.modalTitle}>Confirm Logout</Text>
+            <Text style={styles.modalText}>Are you sure you want to logout?</Text>
+            <View style={styles.modalActions}>
+              <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowLogoutModal(false)} disabled={isLoading}>
+                <Text style={styles.cancelText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.logoutBtn} onPress={handleConfirmLogout} disabled={isLoading}>
+                <Text style={styles.logoutText}>{isLoading ? "Logging out..." : "Logout"}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </Animated.View>
   );
 };
@@ -159,5 +172,50 @@ const styles = StyleSheet.create({
   statContent: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   statLabel: { color: colors.textSecondary, fontWeight: "600" },
   statValue: { color: colors.text, fontWeight: "800", fontSize: 16 },
-  actionWrap: { marginTop: spacing.sm }
+  actionWrap: { marginTop: spacing.sm },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(15, 23, 42, 0.45)",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: spacing.lg
+  },
+  modalCard: {
+    width: "100%",
+    backgroundColor: colors.surface,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.lg
+  },
+  modalIconWrap: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: "rgba(225, 29, 72, 0.12)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: spacing.sm
+  },
+  modalTitle: { color: colors.text, fontSize: 20, fontWeight: "800", marginBottom: spacing.xs },
+  modalText: { color: colors.textSecondary, marginBottom: spacing.md },
+  modalActions: { flexDirection: "row", gap: spacing.sm },
+  cancelBtn: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.background,
+    borderRadius: 12,
+    paddingVertical: spacing.sm + 1,
+    alignItems: "center"
+  },
+  cancelText: { color: colors.textSecondary, fontWeight: "700" },
+  logoutBtn: {
+    flex: 1,
+    backgroundColor: colors.error,
+    borderRadius: 12,
+    paddingVertical: spacing.sm + 1,
+    alignItems: "center"
+  },
+  logoutText: { color: "#FFFFFF", fontWeight: "700" }
 });

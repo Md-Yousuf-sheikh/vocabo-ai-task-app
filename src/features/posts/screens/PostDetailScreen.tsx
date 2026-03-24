@@ -68,9 +68,7 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
         >
           <ArrowLeft2 size={20} color={colors.text} variant="Linear" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconBtn}>
-          <More size={20} color={colors.text} variant="Linear" />
-        </TouchableOpacity>
+       
       </View>
 
       <ScrollView
@@ -152,7 +150,7 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
           ]}
           disabled={!commentText.trim()}
         >
-          <Send2 size={18} color="#FFFFFF" variant="Bulk" />
+          <Send2 size={18} color="#000000" variant="Bold" />
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -290,6 +288,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: colors.primary,
   },
-  sendBtnDisabled: { opacity: 0.45 },
+  sendBtnDisabled: { opacity: 0.50 },
   error: { color: colors.error, textAlign: "center", marginTop: spacing.xl },
 });
