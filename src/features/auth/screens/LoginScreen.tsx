@@ -17,6 +17,7 @@ export const LoginScreen = ({ navigation }: Props) => {
   const [password, setPassword] = useState("");
 
   const emailError = email.length > 0 && !isValidEmail(email) ? "Please enter a valid email" : "";
+console.log('error', error);
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.container}>
