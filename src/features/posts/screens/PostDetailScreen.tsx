@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   FlatList,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -58,7 +59,7 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === "ios" ? "padding" : "padding"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 88 : 0}
     >
       <View style={styles.topBar}>
@@ -68,7 +69,7 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
         >
           <ArrowLeft2 size={20} color={colors.text} variant="Linear" />
         </TouchableOpacity>
-       
+
       </View>
 
       <ScrollView
@@ -140,6 +141,7 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
         />
         <TouchableOpacity
           onPress={async () => {
+            Keyboard.dismiss();
             if (!commentText.trim()) return;
             await addComment(commentText.trim());
             setCommentText("");
@@ -163,7 +165,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     paddingTop: (StatusBar.currentHeight ?? 50),
   },
-  content: { padding: spacing.sm, paddingBottom: spacing.xl },
+  content: { padding: spacing.sm, paddingBottom: spacing.xl,  },
   topBar: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -253,19 +255,16 @@ const styles = StyleSheet.create({
   },
   emptyCommentsText: { color: colors.textSecondary, textAlign: "center" },
   inputWrap: {
-    borderTopWidth: 0,
+    borderTopWidth: 1,
+    borderColor: colors.border,
     paddingHorizontal: spacing.md,
     paddingTop: spacing.sm,
-    paddingBottom: spacing.sm + 2,
+    paddingBottom: spacing.sm,
     backgroundColor: colors.background,
     flexDirection: "row",
     alignItems: "flex-end",
     gap: spacing.sm,
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: -2 },
-    elevation: 2,
+
   },
   commentInput: {
     flex: 1,
