@@ -2,6 +2,8 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import {
   FlatList,
   Keyboard,
+  Linking,
+  Pressable,
   RefreshControl,
   StatusBar,
   StyleSheet,
@@ -13,7 +15,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { ArrowUp2, ProfileCircle, SearchNormal1 } from "iconsax-react-native";
+import { ArrowUp2, CloseCircle, ProfileCircle, SearchNormal1 } from "iconsax-react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { Button, LoadingSpinner } from "@components";
 import { usePosts } from "@hooks";
@@ -96,6 +98,11 @@ export const PostsListScreen = ({ navigation }: Props) => {
     opacity: searchAnim.value,
     transform: [{ translateY: (1 - searchAnim.value) * -8 }]
   }));
+  const isOfflineError = useMemo(() => {
+    if (!error) return false;
+    const normalized = error.toLowerCase();
+    return normalized.includes("network request failed") || normalized.includes("network");
+  }, [error]);
 
   if (isLoading && posts.length === 0) {
     return (
@@ -108,6 +115,30 @@ export const PostsListScreen = ({ navigation }: Props) => {
   }
 
   if (error && posts.length === 0) {
+    if (isOfflineError) {
+      return (
+        <View style={styles.centered}>
+          <View style={styles.offlineCard}>
+            <Text style={styles.offlineTitle}>No Internet Connection</Text>
+            <Text style={styles.offlineText}>
+              Turn on your internet and try again. You can also open settings to connect quickly.
+            </Text>
+            <View style={styles.offlineActions}>
+              <Button label="Try Again" onPress={refetch} />
+              <TouchableOpacity
+                style={styles.settingsBtn}
+                onPress={() => {
+                  void Linking.openSettings();
+                }}
+              >
+                <Text style={styles.settingsBtnText}>Open Settings</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      );
+    }
+
     return (
       <View style={styles.centered}>
         <Text style={styles.error}>{error}</Text>
@@ -171,6 +202,16 @@ export const PostsListScreen = ({ navigation }: Props) => {
               autoCorrect={false}
               onSubmitEditing={Keyboard.dismiss}
             />
+            {searchQuery.trim().length > 0 ? (
+              <Pressable
+                onPress={() => setSearchQuery("")}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel="Clear search text"
+              >
+                <CloseCircle size={18} color={colors.textSecondary} variant="Bold" />
+              </Pressable>
+            ) : null}
           </View>
         </Animated.View>
       </View>
@@ -286,6 +327,43 @@ const styles = StyleSheet.create({
   },
   empty: { color: colors.textSecondary },
   error: { color: colors.error, marginBottom: spacing.md },
+  offlineCard: {
+    width: "100%",
+    maxWidth: 360,
+    borderRadius: 16,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.lg,
+    gap: spacing.sm,
+  },
+  offlineTitle: {
+    color: colors.text,
+    fontSize: 22,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  offlineText: {
+    color: colors.textSecondary,
+    textAlign: "center",
+    lineHeight: 22,
+  },
+  offlineActions: {
+    marginTop: spacing.xs,
+    gap: spacing.sm,
+  },
+  settingsBtn: {
+    borderWidth: 1,
+    borderColor: colors.primary,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: spacing.sm + 2,
+  },
+  settingsBtnText: {
+    color: colors.primary,
+    fontWeight: "700",
+  },
   toTopBtn: {
     position: "absolute",
     right: spacing.md,

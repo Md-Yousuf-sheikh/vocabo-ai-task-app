@@ -5,6 +5,7 @@ import { useAuth } from "@hooks";
 import { ErrorBoundary } from "@utils";
 import type { AuthStackParamList, PostsStackParamList, RootStackParamList } from "@types";
 import { LoadingSpinner } from "@components";
+import { useEffect } from "react";
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
@@ -25,8 +26,16 @@ const PostsStackNavigator = () => (
   </PostsStack.Navigator>
 );
 
-export const RootNavigator = () => {
+type RootNavigatorProps = {
+  onBootstrapReady?: () => void;
+};
+
+export const RootNavigator = ({ onBootstrapReady }: RootNavigatorProps) => {
   const { isAuthenticated, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading) onBootstrapReady?.();
+  }, [isLoading, onBootstrapReady]);
 
   if (isLoading) return <LoadingSpinner message="Checking auth..." />;
 

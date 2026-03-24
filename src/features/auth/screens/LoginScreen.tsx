@@ -39,10 +39,6 @@ export const LoginScreen = ({ navigation }: Props) => {
 
         <Text style={styles.orText}>or continue with</Text>
         <View style={styles.socialRow}>
-          <TouchableOpacity style={styles.socialBtn} disabled>
-            <Ionicons name="logo-facebook" size={16} color={colors.primary} />
-            <Text style={styles.socialText}>Facebook</Text>
-          </TouchableOpacity>
           <TouchableOpacity style={styles.socialBtn} onPress={loginWithGoogle} disabled={isLoading}>
             <Ionicons name="logo-google" size={16} color={colors.error} />
             <Text style={styles.socialText}>Google</Text>

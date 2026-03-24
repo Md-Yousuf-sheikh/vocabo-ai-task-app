@@ -1,6 +1,7 @@
 import "@react-native-firebase/auth";
 import type { FirebaseAuthTypes } from "@react-native-firebase/auth";
-import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "@react-native-firebase/auth/lib/modular";
+import { createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithCredential, signInWithEmailAndPassword, signOut } from "@react-native-firebase/auth/lib/modular";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 export const subscribeToAuthState = (callback: (user: FirebaseAuthTypes.User | null) => void): (() => void) => {
   return onAuthStateChanged(getAuth(), callback);
@@ -17,7 +18,20 @@ export const registerWithEmail = async (email: string, password: string): Promis
 };
 
 export const loginWithGoogle = async (): Promise<FirebaseAuthTypes.User> => {
-  throw new Error("Google Sign-In is not configured for native auth in this project yet.");
+  await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+  const result = await GoogleSignin.signIn();
+  if (result.type !== "success") {
+    throw new Error("Google sign-in was cancelled.");
+  }
+
+  const idToken = result.data.idToken;
+  if (!idToken) {
+    throw new Error("Google sign-in failed: missing idToken.");
+  }
+
+  const credential = GoogleAuthProvider.credential(idToken);
+  const userCredential = await signInWithCredential(getAuth(), credential);
+  return userCredential.user;
 };
 
 export const logout = async (): Promise<void> => {

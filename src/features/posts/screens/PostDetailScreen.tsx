@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   FlatList,
   Keyboard,
   KeyboardAvoidingView,
+  Linking,
   Platform,
   ScrollView,
   StatusBar,
@@ -51,10 +52,43 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
     likeProgress.value = withTiming(next, { duration: 220 });
     await toggleLike();
   };
+  const isOfflineError = useMemo(() => {
+    if (!error) return false;
+    const normalized = error.toLowerCase();
+    return normalized.includes("network request failed") || normalized.includes("network");
+  }, [error]);
 
   if (isLoading) return <LoadingSpinner message="Loading post..." />;
-  if (error || !post)
+  if (error || !post) {
+    if (isOfflineError) {
+      return (
+        <View style={styles.centered}>
+          <View style={styles.offlineCard}>
+            <Text style={styles.offlineTitle}>No Internet Connection</Text>
+            <Text style={styles.offlineText}>
+              Turn on your internet and try again. You can also open settings to connect quickly.
+            </Text>
+            <TouchableOpacity
+              style={styles.settingsBtn}
+              onPress={() => {
+                void Linking.openSettings();
+              }}
+            >
+              <Text style={styles.settingsBtnText}>Open Settings</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.retryBtn}
+              onPress={() => navigation.goBack()}
+            >
+              <Text style={styles.retryBtnText}>Go Back</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
+    }
+
     return <Text style={styles.error}>{error ?? "Post not found"}</Text>;
+  }
 
   return (
     <KeyboardAvoidingView
@@ -289,4 +323,55 @@ const styles = StyleSheet.create({
   },
   sendBtnDisabled: { opacity: 0.50 },
   error: { color: colors.error, textAlign: "center", marginTop: spacing.xl },
+  centered: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.background,
+    padding: spacing.lg,
+  },
+  offlineCard: {
+    width: "100%",
+    maxWidth: 360,
+    borderRadius: 16,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.lg,
+    gap: spacing.sm,
+  },
+  offlineTitle: {
+    color: colors.text,
+    fontSize: 22,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  offlineText: {
+    color: colors.textSecondary,
+    textAlign: "center",
+    lineHeight: 22,
+  },
+  settingsBtn: {
+    borderWidth: 1,
+    borderColor: colors.primary,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: spacing.sm + 2,
+  },
+  settingsBtnText: {
+    color: colors.primary,
+    fontWeight: "700",
+  },
+  retryBtn: {
+    backgroundColor: colors.primary,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: spacing.sm + 2,
+  },
+  retryBtnText: {
+    color: "#FFFFFF",
+    fontWeight: "700",
+  },
 });
