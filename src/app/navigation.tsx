@@ -11,6 +11,7 @@ const RootStack = createNativeStackNavigator<RootStackParamList>();
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 const PostsStack = createNativeStackNavigator<PostsStackParamList>();
 
+// Auth Stack Navigator
 const AuthStackNavigator = () => (
   <AuthStack.Navigator screenOptions={{ headerShown: false }}>
     <AuthStack.Screen name="Login" component={LoginScreen} />
@@ -18,6 +19,7 @@ const AuthStackNavigator = () => (
   </AuthStack.Navigator>
 );
 
+// Posts Stack Navigator
 const PostsStackNavigator = () => (
   <PostsStack.Navigator screenOptions={{ headerShown: false }}>
     <PostsStack.Screen name="PostsList" component={PostsListScreen} />
@@ -26,10 +28,13 @@ const PostsStackNavigator = () => (
   </PostsStack.Navigator>
 );
 
+// Root Navigator Props
 type RootNavigatorProps = {
   onBootstrapReady?: () => void;
 };
 
+
+// Root Navigator
 export const RootNavigator = ({ onBootstrapReady }: RootNavigatorProps) => {
   const { isAuthenticated, isLoading } = useAuth();
 

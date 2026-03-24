@@ -1,98 +1,123 @@
 # Vocabo AI Task App
 
-## Project Overview
-This is a React Native Expo application built with TypeScript and a feature-based architecture.
-It demonstrates a modular social feed flow with Firebase authentication, posts listing, post details, likes/comments persistence, reusable UI primitives, caching, and typed navigation.
+## 1) Project Overview
+Vocabo AI Task App is a React Native application built with Expo and TypeScript using a feature-oriented architecture. It demonstrates a production-style mobile flow with authentication, feed listing, post details, likes/comments interactions, reusable UI primitives, and cached data access.
 
-## Tech Stack
+The codebase is organized for maintainability: screens and feature logic are separated, external services are abstracted, and shared modules are centralized for reuse.
+
+## 2) Tech Stack
 - Expo
 - React Native
-- TypeScript (strict mode)
-- Firebase Auth
-- React Navigation (native stack + bottom tabs)
+- TypeScript
+- Firebase (Auth + project configuration)
+- React Navigation
 - React Native Reanimated
-- AsyncStorage
+- AsyncStorage (cache persistence)
 
-## Architecture Explanation
-### Feature-Based Structure
+## 3) Architecture Explanation
+### Feature-based folder structure diagram
 ```text
 src/
-  app/            # Navigation and app-level composition
-  features/       # Domain features (auth, posts, profile)
-  components/     # Reusable UI components
-  hooks/          # Reusable stateful logic
-  services/       # API, auth, cache abstractions
-  theme/          # Design tokens and theme object
-  types/          # Shared TypeScript contracts
-  utils/          # Pure helpers and app utilities
+  app/                  # App bootstrap and navigation composition
+  components/           # Reusable UI building blocks
+  features/
+    auth/               # Auth screens/components specific to auth feature
+    posts/              # Post list/detail screens and feature-level UI
+    profile/            # Profile feature UI
+  hooks/                # Reusable app hooks (auth, posts, post detail, etc.)
+  services/
+    api/                # API client and posts service
+    auth/               # Auth service abstraction
+    firebase/           # Firebase app/auth config
+  theme/                # Colors, spacing, typography, reusable theme tokens
+  types/                # Shared TypeScript domain contracts
+  utils/                # Reusable helpers/constants
+  firebase/             # Native firebase config files (platform files)
 ```
 
-### Separation Of Concerns
-- UI components handle rendering only.
-- Hooks encapsulate UI-facing logic and local state.
-- Services isolate external dependencies (Firebase, network, cache).
-- Types and utils stay framework-agnostic to maximize reuse.
+### Separation of concerns: UI / Hooks / Services
+- UI layers (`components`, feature screens) are focused on presentation and user interaction.
+- Hooks (`useAuth`, `usePosts`, `usePostDetail`, `useLikeComment`) orchestrate state, loading, and side-effects for UI.
+- Services (`services/*`) encapsulate network, Firebase auth, and persistence details so hooks/screens stay framework-friendly and testable.
 
-### Caching Strategy
-- `cache.service` stores API payloads in AsyncStorage with TTL.
-- `usePosts` and `usePostDetail` read cache first, then fallback to API.
-- Expired cache entries are automatically invalidated.
+### How caching works
+- The cache layer uses `AsyncStorage` through `services/cache.service.ts`.
+- `setCache` stores payloads with an `expiresAt` timestamp (TTL-based invalidation).
+- `getCache` returns cached data when valid; expired entries are removed automatically.
+- Features that fetch posts can use this mechanism to reduce repeated network requests and improve perceived performance.
 
-### Firebase Abstraction
-- `firebase.config.ts` initializes app/auth from environment variables.
-- `auth.service.ts` centralizes login/register/logout/auth subscription.
-- Hooks (`useAuth`, `useLogin`, `useRegister`) consume the service layer instead of Firebase directly.
+### How Firebase is abstracted
+- Firebase app config is isolated in `services/firebase/firebase.config.ts`, reading credentials from `EXPO_PUBLIC_*` environment variables.
+- Authentication operations are centralized in `services/auth/auth.service.ts` (login, register, auth-state subscription, logout, Google sign-in).
+- Hooks and feature screens consume service functions rather than calling Firebase SDK methods directly, keeping Firebase dependencies localized.
 
-## Setup Instructions
+## 4) Setup Instructions
 ### Prerequisites
-- Node.js LTS
+- Node.js (LTS recommended)
 - npm
-- Xcode (iOS) and/or Android Studio (Android)
-- Expo CLI support via `npx expo`
+- Expo-compatible local setup (`npx expo`)
+- Android Studio and/or Xcode for device/simulator builds
+- Firebase project with Authentication enabled
 
-### Firebase Setup
-1. Create a Firebase project.
-2. Enable Email/Password authentication.
-3. Add app credentials to Expo public env variables.
-4. Download and place platform config files as needed by Firebase.
+### Firebase setup steps
+1. Create a Firebase project in the Firebase Console.
+2. Enable `Authentication > Sign-in method > Email/Password`.
+3. Register the Android/iOS apps in Firebase (if using native runs/builds).
+4. Keep platform config files available:
+   - Android: `google-services.json`
+   - iOS: `GoogleService-Info.plist`
+5. (Optional for Google sign-in) Configure web client ID and add it to environment variables.
 
-### Environment Configuration
-Create `.env` (or use Expo env injection) with:
+### `.env` configuration
+Create a `.env` file in the project root:
 
 ```bash
-EXPO_PUBLIC_FIREBASE_API_KEY=...
-EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=...
-EXPO_PUBLIC_FIREBASE_PROJECT_ID=...
-EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=...
-EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
-EXPO_PUBLIC_FIREBASE_APP_ID=...
+EXPO_PUBLIC_FIREBASE_API_KEY=your_api_key
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+EXPO_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+EXPO_PUBLIC_FIREBASE_APP_ID=your_app_id
+EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=your_google_web_client_id
 ```
 
-### Install And Run
+### Install and run
 ```bash
 npm install
 npm run start
 ```
-or
+
+Useful alternatives:
 ```bash
 npm run android
 npm run ios
 ```
 
-## APK Build Instructions
-```bash
-npm install -g eas-cli
-eas login
-eas build:configure
-eas build -p android --profile preview
-```
+## 5) APK Build Instructions (`eas build`)
+1. Install EAS CLI:
+   ```bash
+   npm install -g eas-cli
+   ```
+2. Authenticate with Expo:
+   ```bash
+   eas login
+   ```
+3. Configure EAS for the project:
+   ```bash
+   eas build:configure
+   ```
+4. Create an Android build:
+   ```bash
+   eas build -p android --profile preview
+   ```
+5. Download the generated artifact from the Expo build link.
 
-## AI Usage Transparency
-- AI assistance was used to scaffold architecture, generate repetitive boilerplate, and draft reusable component/service patterns.
-- All generated code was manually reviewed, adapted, and validated for strict TypeScript, architecture consistency, and runtime integration.
-- Final structure and implementation decisions were verified against project requirements.
+## 6) AI Usage Transparency
+- AI assistance was used for drafting repetitive boilerplate, suggesting architecture shape, and accelerating documentation scaffolding.
+- Every AI-generated or AI-assisted output was manually reviewed, integrated, and adjusted to match project requirements and actual runtime behavior.
+- Final implementation understanding was validated by reading the relevant files/services, checking integration boundaries, and running the app workflow.
 
-## Suggested Commit Sequence
+## Suggested Git Commit Sequence (Conventional Commits)
 - `chore: init expo project with typescript template`
 - `chore: setup folder structure and theme system`
 - `feat: add reusable UI components (Button, Input, Card, Avatar)`
