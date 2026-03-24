@@ -1,7 +1,7 @@
 import { ReactNode, useEffect } from "react";
 import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import Animated, { FadeInUp, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
-import { colors, shadows, spacing } from "@theme";
+import { colors,  spacing } from "@theme";
 
 interface CardProps {
   children: ReactNode;
@@ -42,6 +42,5 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderWidth: 1,
     borderColor: colors.border,
-    ...shadows.small
   }
 });

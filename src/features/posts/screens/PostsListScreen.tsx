@@ -1,5 +1,6 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  Animated,
   FlatList,
   Keyboard,
   Linking,
@@ -38,6 +39,7 @@ export const PostsListScreen = ({ navigation }: Props) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const scrollTopAnim = useRef(new Animated.Value(0)).current;
   const listRef = useRef<FlatList<Post>>(null);
   const skeletonData = useMemo(() => [1, 2, 3], []);
   const getItemLayout = (_: unknown, index: number) => ({
@@ -45,6 +47,8 @@ export const PostsListScreen = ({ navigation }: Props) => {
     offset: 132 * index,
     index,
   });
+
+  // filter the posts based on the search query
   const filteredPosts = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     const basePosts = posts.slice(0, 8);
@@ -54,6 +58,7 @@ export const PostsListScreen = ({ navigation }: Props) => {
     );
   }, [posts, searchQuery]);
 
+  // load the interaction state from AsyncStorage
   const loadInteractionState = useCallback(async () => {
     if (posts.length === 0) return;
 
@@ -89,12 +94,14 @@ export const PostsListScreen = ({ navigation }: Props) => {
     setInteractionState(nextState);
   }, [posts]);
 
+  // load the interaction state when the screen is focused
   useFocusEffect(
     useCallback(() => {
       void loadInteractionState();
     }, [loadInteractionState]),
   );
 
+  // check if the error is an offline error
   const isOfflineError = useMemo(() => {
     if (!error) return false;
     const normalized = error.toLowerCase();
@@ -103,6 +110,8 @@ export const PostsListScreen = ({ navigation }: Props) => {
       normalized.includes("network")
     );
   }, [error]);
+
+  // get the greeting text based on the current time
   const greetingText = useMemo(() => {
     const hour = new Date().getHours();
     if (hour < 12) return "Good Morning";
@@ -110,6 +119,15 @@ export const PostsListScreen = ({ navigation }: Props) => {
     return "Good Evening";
   }, []);
 
+  useEffect(() => {
+    Animated.timing(scrollTopAnim, {
+      toValue: showScrollTop ? 1 : 0,
+      duration: 220,
+      useNativeDriver: true,
+    }).start();
+  }, [showScrollTop, scrollTopAnim]);
+
+  // show the loading skeleton if the posts are still loading
   if (isLoading && posts.length === 0) {
     return (
       <View style={styles.container}>
@@ -135,6 +153,7 @@ export const PostsListScreen = ({ navigation }: Props) => {
     );
   }
 
+  // show the offline error if the error is an offline error
   if (error && posts.length === 0) {
     if (isOfflineError) {
       return (
@@ -169,6 +188,7 @@ export const PostsListScreen = ({ navigation }: Props) => {
     );
   }
 
+  // show the empty state if there are no posts
   if (!isLoading && posts.length === 0) {
     return (
       <View style={styles.centered}>
@@ -250,6 +270,7 @@ export const PostsListScreen = ({ navigation }: Props) => {
         </View>
       </View>
 
+      {/* Posts List */}
       <FlatList<Post>
         data={filteredPosts}
         style={styles.list}
@@ -293,7 +314,31 @@ export const PostsListScreen = ({ navigation }: Props) => {
         }}
         scrollEventThrottle={16}
       />
-      {showScrollTop ? (
+
+      {/* Scroll to top button */}
+      <Animated.View
+        pointerEvents={showScrollTop ? "auto" : "none"}
+        style={[
+          styles.toTopBtnWrap,
+          {
+            opacity: scrollTopAnim,
+            transform: [
+              {
+                translateY: scrollTopAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [12, 0],
+                }),
+              },
+              {
+                scale: scrollTopAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0.92, 1],
+                }),
+              },
+            ],
+          },
+        ]}
+      >
         <HapticTouchable
           style={styles.toTopBtn}
           onPress={() => {
@@ -302,7 +347,7 @@ export const PostsListScreen = ({ navigation }: Props) => {
         >
           <ArrowUp2 size={18} color="#FFFFFF" variant="Bold" />
         </HapticTouchable>
-      ) : null}
+      </Animated.View>
     </View>
   );
 };
@@ -313,8 +358,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     paddingTop: (StatusBar.currentHeight ?? 0) + spacing.xs,
   },
-  list: { flex: 1 },
-  content: { padding: spacing.sm, paddingBottom: spacing.xxl + spacing.lg },
+  list: {
+    flex: 1,
+  },
+  content: {
+    padding: spacing.sm,
+    paddingBottom: spacing.xxl + spacing.lg,
+  },
   headerWrap: {
     paddingHorizontal: spacing.sm,
     paddingBottom: spacing.sm,
@@ -448,14 +498,16 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   toTopBtn: {
-    position: "absolute",
-    right: spacing.md,
-    bottom: spacing.xl + spacing.lg,
     width: 42,
     height: 42,
     borderRadius: 21,
     backgroundColor: colors.primary,
     alignItems: "center",
     justifyContent: "center",
+  },
+  toTopBtnWrap: {
+    position: "absolute",
+    right: spacing.md,
+    bottom: spacing.xl + spacing.lg,
   },
 });
