@@ -38,7 +38,6 @@ export const RegisterScreen = ({ navigation }: Props) => {
       <KeyboardAwareScrollView
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
         bottomOffset={spacing.md}
       >
@@ -104,9 +103,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: "flex-start",
-    paddingVertical: spacing.md,
-    paddingBottom: spacing.xl,
+    justifyContent: "center",
   },
   content: {
     backgroundColor: colors.surface,
