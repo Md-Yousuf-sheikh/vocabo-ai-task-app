@@ -1,10 +1,9 @@
-import "@react-native-firebase/app";
 import "@react-native-firebase/auth";
+import auth from "@react-native-firebase/auth";
 import type { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import {
   createUserWithEmailAndPassword,
   getAuth,
-  GoogleAuthProvider,
   onAuthStateChanged,
   signInWithCredential,
   signInWithEmailAndPassword,
@@ -15,8 +14,7 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 const GOOGLE_SIGNIN_CONFIG_ERROR =
   "Google Sign-In is misconfigured. Check Android package/SHA and EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID.";
 
-const DEFAULT_AUTH_ERROR = "Something went wrong. Please try again.";
-
+// firebase auth error messages
 const AUTH_ERROR_MESSAGES: Record<string, string> = {
   "auth/invalid-email": "Please enter a valid email address.",
   "auth/missing-email": "Email is required.",
@@ -34,9 +32,10 @@ const AUTH_ERROR_MESSAGES: Record<string, string> = {
   "auth/operation-not-allowed": "This sign-in method is not enabled.",
 };
 
+// convert firebase auth error to user friendly error
 export const toUserFriendlyAuthError = (
   err: unknown,
-  fallbackMessage = DEFAULT_AUTH_ERROR,
+  fallbackMessage = "An unknown error occurred. Please try again.",
 ): string => {
   if (err && typeof err === "object" && "code" in err) {
     const code = String((err as { code?: string }).code);
@@ -60,46 +59,39 @@ export const toUserFriendlyAuthError = (
   return fallbackMessage;
 };
 
+
+// subscribe to auth state
 export const subscribeToAuthState = (
   callback: (user: FirebaseAuthTypes.User | null) => void,
 ): (() => void) => {
   return onAuthStateChanged(getAuth(), callback);
 };
 
+
+// login with email
 export const loginWithEmail = async (
   email: string,
   password: string,
 ): Promise<FirebaseAuthTypes.User> => {
-  const cleanEmail = email.trim();
-  if (!cleanEmail || !password) {
-    throw new Error("Please enter both email and password.");
-  }
-
-  const result = await signInWithEmailAndPassword(
-    getAuth(),
-    cleanEmail,
-    password,
-  );
+  const result = await signInWithEmailAndPassword(getAuth(), email, password);
   return result.user;
 };
 
+// register with email
 export const registerWithEmail = async (
   email: string,
   password: string,
 ): Promise<FirebaseAuthTypes.User> => {
-  const cleanEmail = email.trim();
-  if (!cleanEmail || !password) {
-    throw new Error("Please enter both email and password.");
-  }
-
   const result = await createUserWithEmailAndPassword(
     getAuth(),
-    cleanEmail,
+    email,
     password,
   );
   return result.user;
 };
 
+
+// login with google
 export const loginWithGoogle = async (): Promise<FirebaseAuthTypes.User> => {
   const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID?.trim();
   if (!webClientId) {
@@ -129,11 +121,13 @@ export const loginWithGoogle = async (): Promise<FirebaseAuthTypes.User> => {
     throw new Error("Google sign-in failed: missing idToken.");
   }
 
-  const credential = GoogleAuthProvider.credential(idToken);
+  const credential = auth.GoogleAuthProvider.credential(idToken);
   const userCredential = await signInWithCredential(getAuth(), credential);
   return userCredential.user;
 };
 
+
+// logout from google and firebase
 export const logout = async (): Promise<void> => {
   try {
     await GoogleSignin.signOut();

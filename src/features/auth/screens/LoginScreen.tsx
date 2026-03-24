@@ -22,6 +22,8 @@ export const LoginScreen = ({ navigation }: Props) => {
       ? "Please enter a valid email"
       : "";
 
+      console.log("error", error);
+
   return (
     <View style={styles.container}>
       <KeyboardAwareScrollView
