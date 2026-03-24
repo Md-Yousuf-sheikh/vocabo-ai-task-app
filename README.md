@@ -54,7 +54,7 @@ src/
 ## 4) Setup Instructions
 ### Prerequisites
 - Node.js (LTS recommended)
-- npm
+- yarn
 - Expo-compatible local setup (`npx expo`)
 - Android Studio and/or Xcode for device/simulator builds
 - Firebase project with Authentication enabled
@@ -83,51 +83,32 @@ EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=your_google_web_client_id
 
 ### Install and run
 ```bash
-npm install
-npm run start
+yarn install
+yarn start
 ```
 
 Useful alternatives:
 ```bash
-npm run android
-npm run ios
+yarn android
+yarn ios
 ```
 
-## 5) APK Build Instructions (`eas build`)
-1. Install EAS CLI:
+## 5) APK Build Instructions (`expo prebuild`)
+1. Generate native Android project files:
    ```bash
-   npm install -g eas-cli
+   yarn prebuild
    ```
-2. Authenticate with Expo:
+2. Build release APK locally with Gradle:
    ```bash
-   eas login
+   yarn build:apk
    ```
-3. Configure EAS for the project:
-   ```bash
-   eas build:configure
+3. Find the generated APK at:
+   ```text
+   android/app/build/outputs/apk/release/app-release.apk
    ```
-4. Create an Android build:
-   ```bash
-   eas build -p android --profile preview
-   ```
-5. Download the generated artifact from the Expo build link.
 
 ## 6) AI Usage Transparency
-- AI assistance was used for drafting repetitive boilerplate, suggesting architecture shape, and accelerating documentation scaffolding.
-- Every AI-generated or AI-assisted output was manually reviewed, integrated, and adjusted to match project requirements and actual runtime behavior.
-- Final implementation understanding was validated by reading the relevant files/services, checking integration boundaries, and running the app workflow.
-
-## Suggested Git Commit Sequence (Conventional Commits)
-- `chore: init expo project with typescript template`
-- `chore: setup folder structure and theme system`
-- `feat: add reusable UI components (Button, Input, Card, Avatar)`
-- `feat: add firebase auth service abstraction`
-- `feat: add API client and posts service with caching`
-- `feat: add custom hooks (useAuth, usePosts, useLikeComment)`
-- `feat: setup react navigation with auth flow`
-- `feat: implement login and register screens`
-- `feat: implement posts list screen with skeleton loading`
-- `feat: implement post detail with like and comment system`
-- `feat: add profile screen with logout`
-- `chore: add error boundary and utility helpers`
-- `docs: add README with architecture explanation`
+- AI assistance was used for most of the UI design direction, screen layout iteration, and visual consistency decisions.
+- AI was also used to help design and scaffold reusable components so common UI patterns could be shared across features.
+- Most commits were prepared with AI assistance, then reviewed and finalized by me before keeping them in the project history.
+- Every AI-assisted output was manually reviewed, integrated, and adjusted to match project requirements and actual runtime behavior.
