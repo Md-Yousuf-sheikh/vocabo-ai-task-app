@@ -1,10 +1,10 @@
-import { Modal, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Modal, StatusBar, StyleSheet, Text, View } from "react-native";
 import { useEffect, useState } from "react";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ArrowLeft2, Heart, Logout, MessageText1 } from "iconsax-react-native";
-import { Avatar, Button } from "@components";
+import { Avatar, Button, HapticTouchable } from "@components";
 import { useAuth } from "@hooks";
 import { logout } from "@services";
 import { colors, spacing } from "@theme";
@@ -55,9 +55,9 @@ export const ProfileScreen = ({ navigation }: Props) => {
   return (
     <Animated.View entering={FadeInUp.duration(260)} style={styles.container}>
       <View style={styles.topBar}>
-        <TouchableOpacity style={styles.iconBtn} onPress={() => navigation.goBack()}>
+        <HapticTouchable style={styles.iconBtn} onPress={() => navigation.goBack()}>
           <ArrowLeft2 size={20} color={colors.text} variant="Linear" />
-        </TouchableOpacity>
+        </HapticTouchable>
         <Text style={styles.topTitle}>Profile</Text>
         <View style={styles.iconBtnPlaceholder} />
       </View>
@@ -103,12 +103,12 @@ export const ProfileScreen = ({ navigation }: Props) => {
             <Text style={styles.modalTitle}>Confirm Logout</Text>
             <Text style={styles.modalText}>Are you sure you want to logout?</Text>
             <View style={styles.modalActions}>
-              <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowLogoutModal(false)} disabled={isLoading}>
+              <HapticTouchable style={styles.cancelBtn} onPress={() => setShowLogoutModal(false)} disabled={isLoading}>
                 <Text style={styles.cancelText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.logoutBtn} onPress={handleConfirmLogout} disabled={isLoading}>
+              </HapticTouchable>
+              <HapticTouchable style={styles.logoutBtn} onPress={handleConfirmLogout} disabled={isLoading}>
                 <Text style={styles.logoutText}>{isLoading ? "Logging out..." : "Logout"}</Text>
-              </TouchableOpacity>
+              </HapticTouchable>
             </View>
           </View>
         </View>

@@ -1,6 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
 import { Keyboard, KeyboardTypeOptions, StyleSheet, Text, TextInput, View } from "react-native";
-import Animated, { interpolate, interpolateColor, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { colors, spacing } from "@theme";
 
 interface InputProps {
@@ -26,22 +25,16 @@ export const Input = ({
   rightIcon,
   keyboardType = "default"
 }: InputProps) => {
-  const focusProgress = useSharedValue(value ? 1 : 0);
   const [isFocused, setIsFocused] = useState(false);
+  const [isRaised, setIsRaised] = useState(Boolean(value));
 
   useEffect(() => {
-    if (value) focusProgress.value = withTiming(1);
-  }, [value, focusProgress]);
-
-  const labelStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: interpolate(focusProgress.value, [0, 1], [0, -5]) }],
-    fontSize: interpolate(focusProgress.value, [0, 1], [14, 12]),
-    color: interpolateColor(focusProgress.value, [0, 1], [colors.text, colors.textSecondary])
-  }));
+    setIsRaised(Boolean(value) || isFocused);
+  }, [value, isFocused]);
 
   return (
     <View style={styles.wrapper}>
-      <Animated.Text style={[styles.label, labelStyle]}>{label}</Animated.Text>
+      <Text style={[styles.label, isRaised && styles.labelRaised]}>{label}</Text>
       <View style={[styles.container, isFocused && styles.focusedBorder, error ? styles.errorBorder : undefined]}>
         {leftIcon}
         <TextInput
@@ -54,11 +47,9 @@ export const Input = ({
           keyboardType={keyboardType}
           onFocus={() => {
             setIsFocused(true);
-            focusProgress.value = withTiming(1, { duration: 180 });
           }}
           onBlur={() => {
             setIsFocused(false);
-            if (!value) focusProgress.value = withTiming(0, { duration: 180 });
           }}
           onSubmitEditing={Keyboard.dismiss}
         />
@@ -72,6 +63,7 @@ export const Input = ({
 const styles = StyleSheet.create({
   wrapper: { marginBottom: spacing.sm },
   label: { color: colors.textSecondary, marginBottom: spacing.xs, fontWeight: "500" },
+  labelRaised: { fontSize: 12, color: colors.textSecondary, transform: [{ translateY: -5 }] },
   container: {
     borderWidth: 1,
     borderColor: colors.border,

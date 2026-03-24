@@ -4,13 +4,12 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-import { Button, ErrorCard, Input } from "@components";
+import { Button, ErrorCard, HapticTouchable, Input } from "@components";
 import { useRegister } from "@hooks";
 import { colors, spacing } from "@theme";
 import { isValidPassword } from "@utils";
@@ -79,7 +78,7 @@ export const RegisterScreen = ({ navigation }: Props) => {
             loading={isLoading}
             disabled={Boolean(passwordError || confirmError)}
           />
-          <TouchableOpacity
+          <HapticTouchable
             onPress={() => navigation.goBack()}
             style={styles.linkWrap}
           >
@@ -87,7 +86,7 @@ export const RegisterScreen = ({ navigation }: Props) => {
               Already have an account?{" "}
               <Text style={styles.linkStrong}>Login</Text>
             </Text>
-          </TouchableOpacity>
+          </HapticTouchable>
         </Animated.View>
       </KeyboardAwareScrollView>
     </View>

@@ -1,9 +1,10 @@
+import "@react-native-firebase/app";
 import "@react-native-firebase/auth";
-import auth from "@react-native-firebase/auth";
 import type { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import {
   createUserWithEmailAndPassword,
   getAuth,
+  GoogleAuthProvider,
   onAuthStateChanged,
   signInWithCredential,
   signInWithEmailAndPassword,
@@ -128,7 +129,7 @@ export const loginWithGoogle = async (): Promise<FirebaseAuthTypes.User> => {
     throw new Error("Google sign-in failed: missing idToken.");
   }
 
-  const credential = auth.GoogleAuthProvider.credential(idToken);
+  const credential = GoogleAuthProvider.credential(idToken);
   const userCredential = await signInWithCredential(getAuth(), credential);
   return userCredential.user;
 };

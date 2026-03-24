@@ -1,7 +1,7 @@
 import { memo } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, ViewStyle } from "react-native";
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
+import { ActivityIndicator, Pressable, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { colors, spacing } from "@theme";
+import { triggerHaptic } from "@utils";
 
 type Variant = "primary" | "secondary" | "ghost";
 type Size = "sm" | "md" | "lg";
@@ -28,24 +28,19 @@ const variantStyles: Record<Variant, ViewStyle> = {
 };
 
 const ButtonComponent = ({ label, onPress, variant = "primary", loading = false, disabled = false, size = "md" }: ButtonProps) => {
-  const scale = useSharedValue(1);
-  const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
   const labelColor = variant === "ghost" ? colors.textSecondary : "#FFFFFF";
 
   return (
     <Pressable
       disabled={disabled || loading}
-      onPressIn={() => {
-        scale.value = withSpring(0.95);
+      onPress={() => {
+        void triggerHaptic();
+        onPress();
       }}
-      onPressOut={() => {
-        scale.value = withSpring(1);
-      }}
-      onPress={onPress}
     >
-      <Animated.View style={[styles.button, sizeStyles[size], variantStyles[variant], animatedStyle, disabled && styles.disabled]}>
+      <View style={[styles.button, sizeStyles[size], variantStyles[variant], disabled && styles.disabled]}>
         {loading ? <ActivityIndicator color={labelColor} /> : <Text style={[styles.label, { color: labelColor }]}>{label}</Text>}
-      </Animated.View>
+      </View>
     </Pressable>
   );
 };

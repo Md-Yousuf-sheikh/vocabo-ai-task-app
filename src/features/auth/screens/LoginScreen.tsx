@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Keyboard, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Keyboard, StatusBar, StyleSheet, Text, View } from "react-native";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-import { Button, ErrorCard, Input } from "@components";
+import { Button, ErrorCard, HapticTouchable, Input } from "@components";
 import { useLogin } from "@hooks";
 import { colors, spacing } from "@theme";
 import type { AuthStackParamList } from "@types";
@@ -49,15 +49,15 @@ export const LoginScreen = ({ navigation }: Props) => {
 
           <Text style={styles.orText}>or continue with</Text>
           <View style={styles.socialRow}>
-            <TouchableOpacity style={styles.socialBtn} onPress={loginWithGoogle} disabled={isLoading}>
+            <HapticTouchable style={styles.socialBtn} onPress={loginWithGoogle} disabled={isLoading}>
               <Ionicons name="logo-google" size={16} color={colors.error} />
               <Text style={styles.socialText}>Google</Text>
-            </TouchableOpacity>
+            </HapticTouchable>
           </View>
 
-          <TouchableOpacity onPress={() => navigation.navigate("Register")} style={styles.linkWrap}>
+          <HapticTouchable onPress={() => navigation.navigate("Register")} style={styles.linkWrap}>
             <Text style={styles.link}>Don't have an account? <Text style={styles.linkStrong}>Sign Up</Text></Text>
-          </TouchableOpacity>
+          </HapticTouchable>
         </Animated.View>
       </KeyboardAwareScrollView>
     </View>

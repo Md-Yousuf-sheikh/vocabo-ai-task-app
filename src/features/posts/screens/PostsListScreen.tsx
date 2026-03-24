@@ -9,15 +9,18 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { ArrowUp2, CloseCircle, ProfileCircle, SearchNormal1 } from "iconsax-react-native";
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import { Button, LoadingSpinner } from "@components";
+import {
+  ArrowUp2,
+  CloseCircle,
+  ProfileCircle,
+  SearchNormal1,
+} from "iconsax-react-native";
+import { Button, HapticTouchable, LoadingSpinner } from "@components";
 import { usePosts } from "@hooks";
 import { colors, spacing } from "@theme";
 import type { Post, PostsStackParamList } from "@types";
@@ -36,7 +39,6 @@ export const PostsListScreen = ({ navigation }: Props) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const listRef = useRef<FlatList<Post>>(null);
-  const searchAnim = useSharedValue(0);
   const skeletonData = useMemo(() => [1, 2, 3], []);
   const getItemLayout = (_: unknown, index: number) => ({
     length: 132,
@@ -93,23 +95,42 @@ export const PostsListScreen = ({ navigation }: Props) => {
     }, [loadInteractionState]),
   );
 
-  const searchAnimatedStyle = useAnimatedStyle(() => ({
-    maxHeight: 60 * searchAnim.value,
-    opacity: searchAnim.value,
-    transform: [{ translateY: (1 - searchAnim.value) * -8 }]
-  }));
   const isOfflineError = useMemo(() => {
     if (!error) return false;
     const normalized = error.toLowerCase();
-    return normalized.includes("network request failed") || normalized.includes("network");
+    return (
+      normalized.includes("network request failed") ||
+      normalized.includes("network")
+    );
   }, [error]);
+  const greetingText = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good Morning";
+    if (hour < 18) return "Good Afternoon";
+    return "Good Evening";
+  }, []);
 
   if (isLoading && posts.length === 0) {
     return (
       <View style={styles.container}>
-        {skeletonData.map((id) => (
-          <SkeletonCard key={id} />
-        ))}
+        <View style={styles.headerWrap}>
+          <View style={styles.topRow}>
+            <View>
+              <View style={styles.helloSkeleton} />
+              <View style={styles.headlineSkeleton} />
+            </View>
+            <View style={styles.actionsWrap}>
+              <View style={styles.iconSkeleton} />
+              <View style={styles.iconSkeleton} />
+            </View>
+          </View>
+          <View style={styles.searchSkeleton} />
+        </View>
+        <View style={styles.content}>
+          {skeletonData.map((id) => (
+            <SkeletonCard key={id} />
+          ))}
+        </View>
       </View>
     );
   }
@@ -121,18 +142,19 @@ export const PostsListScreen = ({ navigation }: Props) => {
           <View style={styles.offlineCard}>
             <Text style={styles.offlineTitle}>No Internet Connection</Text>
             <Text style={styles.offlineText}>
-              Turn on your internet and try again. You can also open settings to connect quickly.
+              Turn on your internet and try again. You can also open settings to
+              connect quickly.
             </Text>
             <View style={styles.offlineActions}>
               <Button label="Try Again" onPress={refetch} />
-              <TouchableOpacity
+              <HapticTouchable
                 style={styles.settingsBtn}
                 onPress={() => {
                   void Linking.openSettings();
                 }}
               >
                 <Text style={styles.settingsBtnText}>Open Settings</Text>
-              </TouchableOpacity>
+              </HapticTouchable>
             </View>
           </View>
         </View>
@@ -157,19 +179,19 @@ export const PostsListScreen = ({ navigation }: Props) => {
 
   return (
     <View style={styles.container}>
+      {/* Header */}
       <View style={styles.headerWrap}>
         <View style={styles.topRow}>
           <View>
-            <Text style={styles.hello}>Good Morning</Text>
+            <Text style={styles.hello}>{greetingText}</Text>
             <Text style={styles.headline}>Explore Today</Text>
           </View>
           <View style={styles.actionsWrap}>
-            <TouchableOpacity
+            <HapticTouchable
               style={styles.notifyWrap}
               onPress={() => {
                 setIsSearchOpen((prev) => {
                   const next = !prev;
-                  searchAnim.value = withTiming(next ? 1 : 0, { duration: 220 });
                   if (!next) {
                     setSearchQuery("");
                     Keyboard.dismiss();
@@ -179,13 +201,21 @@ export const PostsListScreen = ({ navigation }: Props) => {
               }}
             >
               <SearchNormal1 size={20} color={colors.text} variant="Linear" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.notifyWrap} onPress={() => navigation.navigate("Profile")}>
+            </HapticTouchable>
+            <HapticTouchable
+              style={styles.notifyWrap}
+              onPress={() => navigation.navigate("Profile")}
+            >
               <ProfileCircle size={20} color={colors.text} variant="Linear" />
-            </TouchableOpacity>
+            </HapticTouchable>
           </View>
         </View>
-        <Animated.View style={[styles.searchAnimWrap, searchAnimatedStyle]}>
+        <View
+          style={[
+            styles.searchAnimWrap,
+            !isSearchOpen && styles.searchAnimWrapClosed,
+          ]}
+        >
           <View style={styles.searchWrap}>
             <SearchNormal1
               size={18}
@@ -209,11 +239,15 @@ export const PostsListScreen = ({ navigation }: Props) => {
                 accessibilityRole="button"
                 accessibilityLabel="Clear search text"
               >
-                <CloseCircle size={18} color={colors.textSecondary} variant="Bold" />
+                <CloseCircle
+                  size={18}
+                  color={colors.textSecondary}
+                  variant="Bold"
+                />
               </Pressable>
             ) : null}
           </View>
-        </Animated.View>
+        </View>
       </View>
 
       <FlatList<Post>
@@ -229,7 +263,9 @@ export const PostsListScreen = ({ navigation }: Props) => {
             liked={interactionState[item.id]?.liked ?? false}
             likesCount={interactionState[item.id]?.liked ? 1 : 0}
             commentsCount={interactionState[item.id]?.commentsCount ?? 0}
-            onPress={() => navigation.navigate("PostDetail", { postId: item.id })}
+            onPress={() =>
+              navigation.navigate("PostDetail", { postId: item.id })
+            }
           />
         )}
         refreshControl={
@@ -258,27 +294,30 @@ export const PostsListScreen = ({ navigation }: Props) => {
         scrollEventThrottle={16}
       />
       {showScrollTop ? (
-        <TouchableOpacity
+        <HapticTouchable
           style={styles.toTopBtn}
           onPress={() => {
             listRef.current?.scrollToOffset({ offset: 0, animated: true });
           }}
         >
           <ArrowUp2 size={18} color="#FFFFFF" variant="Bold" />
-        </TouchableOpacity>
+        </HapticTouchable>
       ) : null}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+    paddingTop: (StatusBar.currentHeight ?? 0) + spacing.xs,
+  },
   list: { flex: 1 },
   content: { padding: spacing.sm, paddingBottom: spacing.xxl + spacing.lg },
   headerWrap: {
     paddingHorizontal: spacing.sm,
     paddingBottom: spacing.sm,
-    paddingTop: StatusBar.currentHeight ?? 50,
     backgroundColor: colors.background,
   },
   topRow: {
@@ -287,7 +326,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: spacing.sm,
   },
-  actionsWrap: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
+  actionsWrap: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+  },
   notifyWrap: {
     width: 40,
     height: 40,
@@ -298,8 +341,39 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  hello: { color: colors.textSecondary, fontWeight: "600" },
-  headline: { color: colors.text, fontSize: 30, fontWeight: "800" },
+  hello: {
+    color: colors.textSecondary,
+    fontWeight: "600",
+  },
+  headline: {
+    color: colors.text,
+    fontSize: 30,
+    fontWeight: "800",
+  },
+  helloSkeleton: {
+    height: 14,
+    width: 110,
+    borderRadius: 8,
+    backgroundColor: colors.border,
+    marginBottom: spacing.xs,
+  },
+  headlineSkeleton: {
+    height: 34,
+    width: 190,
+    borderRadius: 10,
+    backgroundColor: colors.border,
+  },
+  iconSkeleton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.border,
+  },
+  searchSkeleton: {
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: colors.border,
+  },
   searchWrap: {
     flexDirection: "row",
     alignItems: "center",
@@ -311,7 +385,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
   },
   searchAnimWrap: {
-    overflow: "hidden"
+    overflow: "hidden",
+  },
+  searchAnimWrapClosed: {
+    maxHeight: 0,
+    opacity: 0,
   },
   search: {
     flex: 1,
@@ -325,8 +403,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     padding: spacing.lg,
   },
-  empty: { color: colors.textSecondary },
-  error: { color: colors.error, marginBottom: spacing.md },
+  empty: {
+    color: colors.textSecondary,
+  },
+  error: {
+    color: colors.error,
+    marginBottom: spacing.md,
+  },
   offlineCard: {
     width: "100%",
     maxWidth: 360,

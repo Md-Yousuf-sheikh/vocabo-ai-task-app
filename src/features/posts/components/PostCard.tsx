@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import type { Post } from "@types";
 import { Card } from "@components";
-import { colors, spacing } from "@theme";
+import { colors, fontSizes, spacing } from "@theme";
 import { truncateText } from "@utils";
 
 interface PostCardProps {
@@ -59,7 +59,9 @@ const PostCardComponent = ({
 export const PostCard = memo(PostCardComponent);
 
 const styles = StyleSheet.create({
-  card: { marginBottom: spacing.md },
+  card: { 
+    marginBottom: spacing.md,
+  },
   category: {
     color: colors.primary,
     fontSize: 12,
@@ -74,16 +76,37 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     textTransform: "capitalize",
   },
-  body: { color: colors.textSecondary, lineHeight: 20 },
+  body: {
+    color: colors.textSecondary,
+    lineHeight: 20,
+    fontSize: fontSizes.sm,
+  },
   metaRow: {
     marginTop: spacing.sm,
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.xs,
   },
-  publisher: { color: colors.textSecondary, fontSize: 12 },
-  dot: { color: colors.textSecondary, fontSize: 12 },
-  footer: { marginTop: spacing.md, flexDirection: "row", gap: spacing.md },
-  row: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
-  meta: { color: colors.textSecondary, fontWeight: "600" },
+  publisher: {
+    color: colors.textSecondary,
+    fontSize: 12,
+  },
+  dot: {
+    color: colors.textSecondary,
+    fontSize: 12,
+  },
+  footer: {
+    marginTop: spacing.md,
+    flexDirection: "row",
+    gap: spacing.md,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+  },
+  meta: {
+    color: colors.textSecondary,
+    fontWeight: "600",
+  },
 });

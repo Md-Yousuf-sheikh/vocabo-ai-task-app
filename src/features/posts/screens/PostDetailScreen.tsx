@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -21,7 +20,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
 import { ArrowLeft2, MessageText1, More, Send2 } from "iconsax-react-native";
-import { LoadingSpinner } from "@components";
+import { HapticTouchable, LoadingSpinner } from "@components";
 import { useLikeComment, usePostDetail } from "@hooks";
 import { colors, spacing } from "@theme";
 import type { Comment, PostsStackParamList } from "@types";
@@ -35,19 +34,22 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
   const { liked, toggleLike, comments, addComment } = useLikeComment(postId);
   const [commentText, setCommentText] = useState("");
   const likeProgress = useSharedValue(liked ? 1 : 0);
+  const likeScale = useSharedValue(liked ? 1.1 : 1);
 
   const likeStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: withSpring(1 + likeProgress.value * 0.1) }],
+    transform: [{ scale: likeScale.value }],
     opacity: interpolate(likeProgress.value, [0, 1], [0.85, 1]),
   }));
 
   useEffect(() => {
-    likeProgress.value = liked ? 1 : 0;
-  }, [liked, likeProgress]);
+    likeProgress.value = withTiming(liked ? 1 : 0, { duration: 220 });
+    likeScale.value = withSpring(liked ? 1.1 : 1);
+  }, [liked, likeProgress, likeScale]);
 
   const onToggleLike = async () => {
     const next = liked ? 0 : 1;
     likeProgress.value = withTiming(next, { duration: 220 });
+    likeScale.value = withSpring(next ? 1.1 : 1);
     await toggleLike();
   };
   const isOfflineError = useMemo(() => {
@@ -66,20 +68,20 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
             <Text style={styles.offlineText}>
               Turn on your internet and try again. You can also open settings to connect quickly.
             </Text>
-            <TouchableOpacity
+            <HapticTouchable
               style={styles.settingsBtn}
               onPress={() => {
                 void Linking.openSettings();
               }}
             >
               <Text style={styles.settingsBtnText}>Open Settings</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </HapticTouchable>
+            <HapticTouchable
               style={styles.retryBtn}
               onPress={() => navigation.goBack()}
             >
               <Text style={styles.retryBtnText}>Go Back</Text>
-            </TouchableOpacity>
+            </HapticTouchable>
           </View>
         </View>
       );
@@ -91,12 +93,12 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
   return (
     <View style={styles.container}>
       <View style={styles.topBar}>
-        <TouchableOpacity
+        <HapticTouchable
           style={styles.iconBtn}
           onPress={() => navigation.goBack()}
         >
           <ArrowLeft2 size={20} color={colors.text} variant="Linear" />
-        </TouchableOpacity>
+        </HapticTouchable>
 
       </View>
 
@@ -113,7 +115,7 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
         <Text style={styles.body}>{post.body}</Text>
 
         <View style={styles.actionBar}>
-          <TouchableOpacity onPress={onToggleLike} style={styles.likeRow}>
+          <HapticTouchable onPress={onToggleLike} style={styles.likeRow}>
             <Animated.View style={likeStyle}>
               <Ionicons
                 name={liked ? "heart" : "heart-outline"}
@@ -122,7 +124,7 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
               />
             </Animated.View>
             <Text style={styles.likeText}>{liked ? "Liked" : "Like"}</Text>
-          </TouchableOpacity>
+          </HapticTouchable>
           <View style={styles.commentStat}>
             <Ionicons
               name="chatbubble-outline"
@@ -170,7 +172,7 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
             style={styles.commentInput}
             multiline
           />
-          <TouchableOpacity
+          <HapticTouchable
             onPress={async () => {
               Keyboard.dismiss();
               if (!commentText.trim()) return;
@@ -184,7 +186,7 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
             disabled={!commentText.trim()}
           >
             <Send2 size={18} color="#000000" variant="Bold" />
-          </TouchableOpacity>
+          </HapticTouchable>
         </View>
       </KeyboardStickyView>
     </View>
