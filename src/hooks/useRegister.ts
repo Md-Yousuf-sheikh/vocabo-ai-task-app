@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { registerWithEmail } from "@services";
+import { registerWithEmail, toUserFriendlyAuthError } from "@services";
 
 export const useRegister = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -11,7 +11,9 @@ export const useRegister = () => {
     try {
       await registerWithEmail(email, password);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed");
+      setError(
+        toUserFriendlyAuthError(err, "Registration failed. Please try again."),
+      );
     } finally {
       setIsLoading(false);
     }

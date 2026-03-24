@@ -34,7 +34,7 @@ export const Input = ({
   }, [value, focusProgress]);
 
   const labelStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: interpolate(focusProgress.value, [0, 1], [0, -18]) }],
+    transform: [{ translateY: interpolate(focusProgress.value, [0, 1], [0, -5]) }],
     fontSize: interpolate(focusProgress.value, [0, 1], [14, 12]),
     color: interpolateColor(focusProgress.value, [0, 1], [colors.text, colors.textSecondary])
   }));
@@ -70,7 +70,7 @@ export const Input = ({
 };
 
 const styles = StyleSheet.create({
-  wrapper: { marginBottom: spacing.md },
+  wrapper: { marginBottom: spacing.sm },
   label: { color: colors.textSecondary, marginBottom: spacing.xs, fontWeight: "500" },
   container: {
     borderWidth: 1,

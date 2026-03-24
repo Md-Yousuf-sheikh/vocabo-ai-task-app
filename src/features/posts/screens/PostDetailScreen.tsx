@@ -2,10 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   FlatList,
   Keyboard,
-  KeyboardAvoidingView,
   Linking,
-  Platform,
-  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -14,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { KeyboardAwareScrollView, KeyboardStickyView } from "react-native-keyboard-controller";
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -91,11 +89,7 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "padding"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 88 : 0}
-    >
+    <View style={styles.container}>
       <View style={styles.topBar}>
         <TouchableOpacity
           style={styles.iconBtn}
@@ -106,9 +100,11 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
 
       </View>
 
-      <ScrollView
+      <KeyboardAwareScrollView
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        bottomOffset={spacing.md}
       >
         <View style={styles.coverPlaceholder}>
           <Text style={styles.coverText}>Featured Story</Text>
@@ -162,34 +158,36 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
             </View>
           )}
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
-      <View style={styles.inputWrap}>
-        <TextInput
-          value={commentText}
-          onChangeText={setCommentText}
-          placeholder="Write a comment..."
-          placeholderTextColor={colors.textSecondary}
-          style={styles.commentInput}
-          multiline
-        />
-        <TouchableOpacity
-          onPress={async () => {
-            Keyboard.dismiss();
-            if (!commentText.trim()) return;
-            await addComment(commentText.trim());
-            setCommentText("");
-          }}
-          style={[
-            styles.sendBtn,
-            !commentText.trim() && styles.sendBtnDisabled,
-          ]}
-          disabled={!commentText.trim()}
-        >
-          <Send2 size={18} color="#000000" variant="Bold" />
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+      <KeyboardStickyView>
+        <View style={styles.inputWrap}>
+          <TextInput
+            value={commentText}
+            onChangeText={setCommentText}
+            placeholder="Write a comment..."
+            placeholderTextColor={colors.textSecondary}
+            style={styles.commentInput}
+            multiline
+          />
+          <TouchableOpacity
+            onPress={async () => {
+              Keyboard.dismiss();
+              if (!commentText.trim()) return;
+              await addComment(commentText.trim());
+              setCommentText("");
+            }}
+            style={[
+              styles.sendBtn,
+              !commentText.trim() && styles.sendBtnDisabled,
+            ]}
+            disabled={!commentText.trim()}
+          >
+            <Send2 size={18} color="#000000" variant="Bold" />
+          </TouchableOpacity>
+        </View>
+      </KeyboardStickyView>
+    </View>
   );
 };
 

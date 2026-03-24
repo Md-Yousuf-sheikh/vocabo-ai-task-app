@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import * as SplashScreen from "expo-splash-screen";
 import { View } from "react-native";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 
 void SplashScreen.preventAutoHideAsync();
 
@@ -27,9 +28,11 @@ export default function App() {
   }, [isBootstrapReady]);
 
   return (
-    <View style={{ flex: 1 }}>
-      <StatusBar style="dark" />
-      <RootNavigator onBootstrapReady={handleBootstrapReady} />
-    </View>
+    <KeyboardProvider>
+      <View style={{ flex: 1 }}>
+        <StatusBar style="dark" />
+        <RootNavigator onBootstrapReady={handleBootstrapReady} />
+      </View>
+    </KeyboardProvider>
   );
 }

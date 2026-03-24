@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { loginWithEmail, loginWithGoogle } from "@services";
+import { loginWithEmail, loginWithGoogle, toUserFriendlyAuthError } from "@services";
 
 export const useLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -11,7 +11,7 @@ export const useLogin = () => {
     try {
       await loginWithEmail(email, password);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(toUserFriendlyAuthError(err, "Login failed. Please try again."));
     } finally {
       setIsLoading(false);
     }
@@ -23,7 +23,9 @@ export const useLogin = () => {
     try {
       await loginWithGoogle();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Google login failed");
+      setError(
+        toUserFriendlyAuthError(err, "Google login failed. Please try again."),
+      );
     } finally {
       setIsLoading(false);
     }
