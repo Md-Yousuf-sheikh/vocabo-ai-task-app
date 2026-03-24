@@ -1,34 +1,23 @@
-import {
-  GoogleAuthProvider,
-  User,
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  signOut
-} from "firebase/auth";
-import { auth } from "@services/firebase/firebase.config";
+import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 
-export const subscribeToAuthState = (callback: (user: User | null) => void): (() => void) => {
-  return onAuthStateChanged(auth, callback);
+export const subscribeToAuthState = (callback: (user: FirebaseAuthTypes.User | null) => void): (() => void) => {
+  return auth().onAuthStateChanged(callback);
 };
 
-export const loginWithEmail = async (email: string, password: string): Promise<User> => {
-  const result = await signInWithEmailAndPassword(auth, email, password);
+export const loginWithEmail = async (email: string, password: string): Promise<FirebaseAuthTypes.User> => {
+  const result = await auth().signInWithEmailAndPassword(email, password);
   return result.user;
 };
 
-export const registerWithEmail = async (email: string, password: string): Promise<User> => {
-  const result = await createUserWithEmailAndPassword(auth, email, password);
+export const registerWithEmail = async (email: string, password: string): Promise<FirebaseAuthTypes.User> => {
+  const result = await auth().createUserWithEmailAndPassword(email, password);
   return result.user;
 };
 
-export const loginWithGoogle = async (): Promise<User> => {
-  const provider = new GoogleAuthProvider();
-  const result = await signInWithPopup(auth, provider);
-  return result.user;
+export const loginWithGoogle = async (): Promise<FirebaseAuthTypes.User> => {
+  throw new Error("Google Sign-In is not configured for native auth in this project yet.");
 };
 
 export const logout = async (): Promise<void> => {
-  await signOut(auth);
+  await auth().signOut();
 };

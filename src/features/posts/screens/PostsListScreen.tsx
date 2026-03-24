@@ -235,10 +235,9 @@ const styles = StyleSheet.create({
   list: { flex: 1 },
   content: { padding: spacing.sm, paddingBottom: spacing.xxl + spacing.lg },
   headerWrap: {
-    // marginBottom: spacing.sm,
     paddingHorizontal: spacing.sm,
     paddingBottom: spacing.sm,
-    paddingTop: StatusBar.currentHeight ?? 0,
+    paddingTop: StatusBar.currentHeight ?? 50,
     backgroundColor: colors.background,
   },
   topRow: {

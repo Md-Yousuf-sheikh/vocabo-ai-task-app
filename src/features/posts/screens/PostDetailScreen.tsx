@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    paddingTop: (StatusBar.currentHeight ?? 0) + 10,
+    paddingTop: (StatusBar.currentHeight ?? 50),
   },
   content: { padding: spacing.sm, paddingBottom: spacing.xl },
   topBar: {
